@@ -1,0 +1,45 @@
+<!-- templates/inventory.html -->
+{% extends "base.html" %}
+
+{% block title %}Инвентарь — {{ user.username }}{% endblock %}
+
+{% block content %}
+<h2>Инвентарь</h2>
+
+<div class="inventory-grid">
+    {% for item in items %}
+    <div class="item-card" style="border-left: 4px solid {{ item.rarity.color() }};">
+        <h3>{{ item.name }}</h3>
+        <p><strong>Тип:</strong> {{ item.item_type }}</p>
+        <p><strong>Редкость:</strong> <span style="color: {{ item.rarity.color() }}">{{ item.rarity }}</span></p>
+
+        {% if item.bonus_strength or item.bonus_agility or item.bonus_endurance or item.bonus_intelligence or item.bonus_charisma %}
+        <p><strong>Бонусы:</strong>
+            {% if item.bonus_strength %}+{{ item.bonus_strength }} силы {% endif %}
+            {% if item.bonus_agility %}+{{ item.bonus_agility }} ловкости {% endif %}
+            {% if item.bonus_endurance %}+{{ item.bonus_endurance }} выносливости {% endif %}
+            {% if item.bonus_intelligence %}+{{ item.bonus_intelligence }} интеллекта {% endif %}
+            {% if item.bonus_charisma %}+{{ item.bonus_charisma }} харизмы {% endif %}
+        </p>
+        {% endif %}
+
+        {% if item.description %}
+        <p><em>{{ item.description }}</em></p>
+        {% endif %}
+
+        <div class="item-actions">
+            {% if item.id in equipped_ids %}
+                <form action="/character/unequip/{{ item.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-small danger">Снять</button>
+                </form>
+            {% else %}
+                <form action="/character/equip/{{ item.id }}/{{ item.item_type }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-small primary">Надеть</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p>Инвентарь пуст.</p>
+    {% endfor %}
+</div>

@@ -1,0 +1,164 @@
+# models.py
+from sqlalchemy import (
+    Column, Integer, String, Boolean, ForeignKey, DateTime, Text,
+    Float, JSON, UniqueConstraint, Enum as SQLEnum
+)
+from sqlalchemy.orm import relationship
+from database import Base
+from datetime import datetime
+
+from enums import QuestStatus, ItemRarity, ItemType
+
+
+class User(Base):
+    """
+    Пользователи.
+    """
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    level = Column(Integer, default=1)
+    experience = Column(Integer, default=0)
+
+    items = relationship("Item", back_populates="owner") # Предметы.
+    skills = relationship("Skill", back_populates="user") # Способности.
+    quest_progresses = relationship("QuestProgress", back_populates="user") # Прогресс задания.
+    character = relationship("Character", uselist=False, back_populates="user") # Игровой персонаж.
+    inventory = relationship("InventoryItem", back_populates="user")
+
+class Character(Base):
+    """
+    Игровой персонаж.
+    """
+    __tablename__ = "characters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    # Основные характеристики.
+    endurance = Column(Integer, default=10) # Выносливость.
+    strength = Column(Integer, default=10) # Сила.
+    agility = Column(Integer, default=10) # Ловкость.
+    intelligence = Column(Integer, default=10) # Интеллект.
+    charisma = Column(Integer, default=10) # Харизма
+
+    # Экипировка (ссылки на предметы)
+    artefact_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Артефакт.
+    head_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Голова.
+    body_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Тело.
+    legs_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Ноги.
+    gloves_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Перчатки.
+    weapon_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Оружие.
+    ring1_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Кольцо 1.
+    ring2_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Кольцо 2.
+    feet_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Обувь.
+
+    # 🔽 Добавьте эти связи
+    artefact_item = relationship("Item", foreign_keys=[artefact_item_id])
+    head_item = relationship("Item", foreign_keys=[head_item_id])
+    body_item = relationship("Item", foreign_keys=[body_item_id])
+    legs_item = relationship("Item", foreign_keys=[legs_item_id])
+    gloves_item = relationship("Item", foreign_keys=[gloves_item_id])
+    weapon_item = relationship("Item", foreign_keys=[weapon_item_id])
+    ring1_item = relationship("Item", foreign_keys=[ring1_item_id])
+    ring2_item = relationship("Item", foreign_keys=[ring2_item_id])
+    feet_item = relationship("Item", foreign_keys=[feet_item_id])
+
+class Item(Base):
+    """
+    Предметы.
+    """
+    __tablename__ = "items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text, nullable=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), index=True)
+    rarity = Column(SQLEnum(ItemRarity), default=ItemRarity.common)
+    item_type = Column(SQLEnum(ItemType), nullable=False)  # 'head', 'body', 'legs', 'gloves', 'ring 1', 'ring 2', 'feet', 'weapon'
+
+    # 🔽 Добавлено: бонусы от предмета
+    bonus_endurance = Column(Integer, default=0)
+    bonus_strength = Column(Integer, default=0)
+    bonus_agility = Column(Integer, default=0)
+    bonus_intelligence = Column(Integer, default=0)
+    bonus_charisma = Column(Integer, default=0)
+
+    # 🔽 Добавлено: дополнительные параметры
+    is_equippable = Column(Boolean, default=True)  # можно ли надеть
+    is_equipped = Column(Boolean, default=False)  # надет ли прямо сейчас (альтернатива — через Character)
+
+    owner = relationship("User", back_populates="items")
+
+
+class Skill(Base):
+    """
+    Способности.
+    """
+    __tablename__ = "skills"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text)
+    level = Column(Integer, default=1)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+
+    user = relationship("User", back_populates="skills")
+
+
+class Enemy(Base):
+    """
+    Базовые противники.
+    """
+    __tablename__ = "enemies"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    level = Column(Integer)
+    health = Column(Integer)
+    attack = Column(Integer)
+    experience_reward = Column(Integer)
+    loot_table = Column(JSON)  # список дропов: [{"item_id": 1, "chance": 0.5}, ...]
+
+
+class Quest(Base):
+    """
+    Задания.
+    """
+    __tablename__ = "quests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(Text, nullable=True)
+    target_count = Column(Integer)
+    required_enemy_id = Column(Integer, ForeignKey("enemies.id"), nullable=True)
+    reward_experience = Column(Integer, default=0)
+    reward_item_id = Column(Integer, ForeignKey("items.id"), nullable=True)
+
+    enemy = relationship("Enemy")
+    reward_item = relationship("Item")
+    progresses = relationship("QuestProgress", back_populates="quest")
+
+
+class QuestProgress(Base):
+    """
+    Прогресс задания.
+    """
+    __tablename__ = "quest_progress"
+
+    id = Column(Integer, primary_key=True)
+    quest_id = Column(Integer, ForeignKey("quests.id"), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    progress = Column(Float, default=0.0)  # 0.0 - 1.0
+    status = Column(SQLEnum(QuestStatus), default=QuestStatus.not_active)
+    current_conditions = Column(JSON) # Необходимо количество для выполнения задания.
+    started_at = Column(DateTime, default=datetime.now)
+    completed_at = Column(DateTime, nullable=True)
+
+    quest = relationship("Quest", back_populates="progresses")
+    user = relationship("User", back_populates="quest_progresses")
+
+    __table_args__ = (UniqueConstraint("quest_id", "user_id"),)

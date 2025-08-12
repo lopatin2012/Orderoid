@@ -1,0 +1,17 @@
+<!-- templates/map.html -->
+{% extends "base/main.html" %}
+{% block content %}
+
+<h2>Маршрут путешествия</h2>
+
+<ol>
+    {% for loc in locations %}
+    <li>
+        <strong>{{ loc.name }}</strong><br>
+        <small>{{ loc.description }}</small>
+    </li>
+    {% endfor %}
+</ol>
+<a href="/journey">Вернуться к путешествию</a>
+
+{% endblock content %}

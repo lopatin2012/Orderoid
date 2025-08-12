@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+
+    <!-- Иконки для тестов -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+<header class="header">
+    <div class="nav-left">
+        <a href="/"><i class="fas fa-home"></i> Домой</a>
+        <a href="/map"><i class="fas fa-map"></i> Карта</a>
+        <a href="#"><i class="fas fa-chevron-left"></i> Назад</a>
+        <a href="#"><i class="fas fa-chevron-right"></i> Дальше</a>
+    </div>
+    <div class="search">
+        <input type="text" placeholder="Поиск...">
+    </div>
+    <div class="nav-right">
+        <div class="user-icon">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <div>О сайте</div>
+    </div>
+</header>
+
+<main>
+    <h2>Добро пожаловать на сайт!</h2>
+    <p>Модуль в разработке...</p>
+    {% block content %}
+    {% endblock content %}
+</main>
+
+</body>
+</html>
