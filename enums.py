@@ -41,13 +41,13 @@ class BaseEnum(Enum):
             return self.order < other.order
         return NotImplemented
 
-class QuestStatus(BaseEnum):
+class EnumQuestStatus(BaseEnum):
     not_active = ("Не активен", 1)
     active = ("Активный", 2)
     completed = ("Завершен", 3)
     failed = ("Провален", 4)
 
-class ItemType(BaseEnum):
+class EnumItemType(BaseEnum):
     artifact = ("Артефакт", 1)
     head = ("Голова", 2)
     body = ("Тело", 3)
@@ -60,7 +60,7 @@ class ItemType(BaseEnum):
     potion = ("Зелье", 10)
     quest = ("Квестовый", 11)    # нельзя продать, только сдать.
 
-class ItemRarity(BaseEnum):
+class EnumItemRarity(BaseEnum):
     common = ("Обычный", 1)
     uncommon = ("Необычный", 2)
     rare = ("Редкий", 3)
@@ -82,3 +82,10 @@ class ItemRarity(BaseEnum):
             "donat": "#ff0000",
             "only_one": "#00ccff",
         }.get(self.name, "#ffffff")
+
+
+class EnumBattleResults(BaseEnum):
+    victory = ("Победа", 1)
+    defeat = ("Поражение", 2)
+    draw = ("Ничья", 3)
+

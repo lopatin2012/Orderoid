@@ -1,5 +1,4 @@
 # crud/character.py
-# type: ignore
 
 from sqlalchemy.orm import Session
 from models import Character, Item

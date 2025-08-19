@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-from enums import QuestStatus, ItemRarity, ItemType
+from enums import EnumQuestStatus, EnumItemRarity, EnumItemType
 
 
 class User(Base):
@@ -28,6 +28,7 @@ class User(Base):
     quest_progresses = relationship("QuestProgress", back_populates="user") # Прогресс задания.
     character = relationship("Character", uselist=False, back_populates="user") # Игровой персонаж.
     inventory = relationship("InventoryItem", back_populates="user")
+
 
 class Character(Base):
     """
@@ -67,6 +68,7 @@ class Character(Base):
     ring2_item = relationship("Item", foreign_keys=[ring2_item_id])
     feet_item = relationship("Item", foreign_keys=[feet_item_id])
 
+
 class Item(Base):
     """
     Предметы.
@@ -77,8 +79,9 @@ class Item(Base):
     name = Column(String, index=True)
     description = Column(Text, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), index=True)
-    rarity = Column(SQLEnum(ItemRarity), default=ItemRarity.common)
-    item_type = Column(SQLEnum(ItemType), nullable=False)  # 'head', 'body', 'legs', 'gloves', 'ring 1', 'ring 2', 'feet', 'weapon'
+    rarity = Column(SQLEnum(EnumItemRarity), default=EnumItemRarity.common)
+    item_type = Column(SQLEnum(EnumItemType), nullable=False)
+    # 'head', 'body', 'legs', 'gloves', 'ring 1', 'ring 2', 'feet', 'weapon'
 
     # 🔽 Добавлено: бонусы от предмета
     bonus_endurance = Column(Integer, default=0)
@@ -153,7 +156,7 @@ class QuestProgress(Base):
     quest_id = Column(Integer, ForeignKey("quests.id"), index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
     progress = Column(Float, default=0.0)  # 0.0 - 1.0
-    status = Column(SQLEnum(QuestStatus), default=QuestStatus.not_active)
+    status = Column(SQLEnum(EnumQuestStatus), default=EnumQuestStatus.not_active)
     current_conditions = Column(JSON) # Необходимо количество для выполнения задания.
     started_at = Column(DateTime, default=datetime.now)
     completed_at = Column(DateTime, nullable=True)
@@ -161,4 +164,40 @@ class QuestProgress(Base):
     quest = relationship("Quest", back_populates="progresses")
     user = relationship("User", back_populates="quest_progresses")
 
-    __table_args__ = (UniqueConstraint("quest_id", "user_id"),)
+    __table_args__ = UniqueConstraint("quest_id", "user_id")
+
+class BattleLog(Base):
+    """
+    Журнал боёв.
+    """
+    __tablename__ = "battle_log"
+
+    id = Column(Integer, primary_key=True)
+    character_id = Column(Integer, ForeignKey("characters.id"), nullable=False)
+    enemy_id = Column(Integer, ForeignKey("enemies.id"), nullable=False)
+
+    # Результат боя.
+    result = Column(String, nullable=False) # "Победа", "Поражение", "Ничья".
+
+    # Урон и потери.
+    damage_dealt = Column(Integer, default=0) # Нанесённый.
+    damage_received = Column(Integer, default=0) # Полученный.
+    items_used = Column(JSON, nullable=False) # Используемые предметы.
+    # [{"item_id": 1, "name": "Зелье лечения", "count": 1}, ....]
+
+    # Награды за бой.
+    experience_gained = Column(Integer, default=0) # Опыт.
+    gold_gained = Column(Integer, default=0) # Золото.
+    items_dropped = Column(JSON, nullable=True) # Выпавшие предметы.
+    # [{"item_id": 10, "name": "Крутой посох" "count": 1}, ....]
+
+    # Время события.
+    started_at = Column(DateTime, default=datetime.now)
+    ended_at = Column(DateTime, default=datetime.now)
+
+    # Связи между таблицами.
+    character = relationship("Character")
+    enemy = relationship("Enemy")
+
+    def __str__(self):
+        return f"Бой: {self.character.user.username} VS {self.enemy.name} -> {self.result}!"

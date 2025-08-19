@@ -1,5 +1,4 @@
 # crud/user.py
-# type: ignore
 
 from utils.auth import pwd_context
 
