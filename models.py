@@ -46,7 +46,7 @@ class Character(Base):
     intelligence = Column(Integer, default=10) # Интеллект.
     charisma = Column(Integer, default=10) # Харизма
 
-    # Экипировка (ссылки на предметы)
+    # Экипировка (ссылки на предметы).
     artefact_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Артефакт.
     head_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Голова.
     body_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Тело.
@@ -57,7 +57,7 @@ class Character(Base):
     ring2_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Кольцо 2.
     feet_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Обувь.
 
-    # 🔽 Добавьте эти связи
+    # Связи предметов.
     artefact_item = relationship("Item", foreign_keys=[artefact_item_id])
     head_item = relationship("Item", foreign_keys=[head_item_id])
     body_item = relationship("Item", foreign_keys=[body_item_id])
@@ -83,14 +83,14 @@ class Item(Base):
     item_type = Column(SQLEnum(EnumItemType), nullable=False)
     # 'head', 'body', 'legs', 'gloves', 'ring 1', 'ring 2', 'feet', 'weapon'
 
-    # 🔽 Добавлено: бонусы от предмета
+    # Бонусы от предмета
     bonus_endurance = Column(Integer, default=0)
     bonus_strength = Column(Integer, default=0)
     bonus_agility = Column(Integer, default=0)
     bonus_intelligence = Column(Integer, default=0)
     bonus_charisma = Column(Integer, default=0)
 
-    # 🔽 Добавлено: дополнительные параметры
+    # Дополнительные параметры
     is_equippable = Column(Boolean, default=True)  # можно ли надеть
     is_equipped = Column(Boolean, default=False)  # надет ли прямо сейчас (альтернатива — через Character)
 

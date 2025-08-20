@@ -47,6 +47,10 @@ class EnumQuestStatus(BaseEnum):
     completed = ("Завершен", 3)
     failed = ("Провален", 4)
 
+class EnumActionStatus(BaseEnum):
+    success = ("Успех", 1)
+    failure = ("Провал", 2)
+
 class EnumItemType(BaseEnum):
     artifact = ("Артефакт", 1)
     head = ("Голова", 2)

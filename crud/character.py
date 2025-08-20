@@ -1,8 +1,15 @@
 # crud/character.py
 
-from sqlalchemy.orm import Session
-from models import Character, Item
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
+from general_dictionaries import valid_attributes
+
+from enums import EnumActionStatus
+
+from models import Character, Item, User
+
+from helpers.helper_character import get_result_calculate_upgrade_cost
 
 def equip_item(db: Session, user_id: int, item_id: int, slot: str):
     """
@@ -51,3 +58,55 @@ def equip_item(db: Session, user_id: int, item_id: int, slot: str):
     db.commit()
     db.refresh(character)
     return character
+
+def upgrade_character_attribute(attribute: str, user_id: int, db: Session, value: int = 1):
+    """
+    Увеличить характеристику персонажа.
+    :param db: Сессия БД.
+    :param user_id: ID пользователя.
+    :param attribute: Название атрибута: "strength", "agility" и т.д.
+    :param value: На сколько увеличиваем.
+    :return:
+    """
+
+    # Есть ли пользователь.
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден!")
+
+    # Есть ли персонаж пользователя.
+    character = db.query(Character).filter(Character.user_id == user_id).first()
+    if not character:
+        raise HTTPException(status_code=404, detail="Персонаж не найден!")
+
+    # Проверка существования атрибута.
+    if attribute not in valid_attributes:
+        raise HTTPException(status_code=404, detail="Недопустимая характеристика!")
+
+    # Сделать хитрый расчёт стоимости.
+    cost = get_result_calculate_upgrade_cost(value)
+
+    if user.experience < cost:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Недостаточно опыта. Требуется {cost}, у вас {user.experience}."
+        )
+
+    # Увеличиваем характеристику.
+    current_value = getattr(character, attribute)
+    setattr(character, attribute, current_value + value)
+
+    # Вычитаем опыт.
+    user.experience -= cost
+
+    # Сохраняем изменения в БД.
+    db.commit()
+    db.refresh(character)
+    db.refresh(user)
+
+    return {
+        "status": EnumActionStatus.success.value,
+        "attribute": attribute,
+        "new_value": current_value + value,
+        "experience_left": user.experience,
+    }
