@@ -155,7 +155,7 @@ class QuestProgress(Base):
     id = Column(Integer, primary_key=True)
     quest_id = Column(Integer, ForeignKey("quests.id"), index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
-    progress = Column(Float, default=0.0)  # 0.0 - 1.0
+    progress = Column(Float, default=0.0)  # от 0.0 до 1.0. Проценты выполнения.
     status = Column(SQLEnum(EnumQuestStatus), default=EnumQuestStatus.not_active)
     current_conditions = Column(JSON) # Необходимо количество для выполнения задания.
     started_at = Column(DateTime, default=datetime.now)
