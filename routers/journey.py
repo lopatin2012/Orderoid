@@ -39,7 +39,7 @@ async def journey(request: Request, db: Session = Depends(get_db)):
     if not path:
         # Начинаем с первой локации.
         start_loc = choice(db.query(Location).all())
-        path = [start_loc["id"]]
+        path = [start_loc.id]
         current_index = 0
         request.session["path"] = path
         request.session["current_index"] = current_index
