@@ -1,13 +1,14 @@
 # main.py
+
 import jinja2.exceptions
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 
 from fastapi.requests import Request
 
 # База.
-from sqlalchemy.orm import Session
-from database import engine, Base, get_db
-import models
+
+from database import engine, Base
+
 from utils.auth import SECRET_KEY
 
 # Роутеры.

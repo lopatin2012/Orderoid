@@ -1,4 +1,7 @@
+# enums.py
+
 from enum import Enum
+
 
 class BaseEnum(Enum):
     """
@@ -41,17 +44,29 @@ class BaseEnum(Enum):
             return self.order < other.order
         return NotImplemented
 
+
 class EnumQuestStatus(BaseEnum):
+    """
+    Статус задания.
+    """
     not_active = ("Не активен", 1)
     active = ("Активный", 2)
     completed = ("Завершен", 3)
     failed = ("Провален", 4)
 
+
 class EnumActionStatus(BaseEnum):
+    """
+    Результат действия.
+    """
     success = ("Успех", 1)
     failure = ("Провал", 2)
 
+
 class EnumItemType(BaseEnum):
+    """
+    Тип предмета.
+    """
     artifact = ("Артефакт", 1)
     head = ("Голова", 2)
     body = ("Тело", 3)
@@ -64,14 +79,18 @@ class EnumItemType(BaseEnum):
     potion = ("Зелье", 10)
     quest = ("Квестовый", 11)    # нельзя продать, только сдать.
 
+
 class EnumItemRarity(BaseEnum):
-    common = ("Обычный", 1)
-    uncommon = ("Необычный", 2)
-    rare = ("Редкий", 3)
-    epic = ("Эпический", 4)
-    legendary = ("Легендарный", 5)  # Лучший из всех предметов, даже донатных.
-    donat = ("Купленный", 6)        # Можно купить за реальные деньги
-    only_one = ("Единственный", 7)  # Уникальный предмет, один на сервер
+    """
+    Редкость предметов.
+    """
+    common = ("Обычный", 1) # +10%
+    uncommon = ("Необычный", 2) # +25%
+    rare = ("Редкий", 3) # +50%
+    epic = ("Эпический", 4) # +80%
+    legendary = ("Легендарный", 5)  # + 150%. Лучший из всех предметов, даже донатных.
+    donat = ("Купленный", 6)        # + 100% Можно купить за реальные деньги.
+    only_one = ("Единственный", 7)  # + 200% Уникальный предмет, один на сервер.
 
     def color(self):
         """
@@ -89,7 +108,44 @@ class EnumItemRarity(BaseEnum):
 
 
 class EnumBattleResults(BaseEnum):
+    """
+    Результат сражений.
+    """
     victory = ("Победа", 1)
     defeat = ("Поражение", 2)
     draw = ("Ничья", 3)
+
+
+class EnumBuff(BaseEnum):
+    """
+    Бонусы на игровом персонаже.
+    """
+    curiosity_boost = ("Увеличена общая скорость прокачки навыков!", 1)
+    experience_boost = ("Увеличена скорость получения опыта!", 2)
+    money_boost = ("Увеличено количество получаемой валюты!", 3)
+    endurance_boost = ("Увеличена скорость прокачки выносливости!", 4)
+    strength_boost = ("Увеличена скорость прокачки силы!", 5)
+    agility_boost = ("Увеличена скорость прокачки ловкости!", 6)
+    intelligence_boost = ("Увеличена скорость прокачки интеллекта!", 7)
+    charisma_boost = ("Увеличена скорость прокачки харизмы!", 8)
+
+
+class EnumTypeEvent(BaseEnum):
+    """
+    Тип события.
+    """
+    positive_event = ("Положительное событие", 1)
+    neutral_event = ("Нейтральное событие", 2)
+    negative_event = ("Негативное событие", 3)
+
+
+class EnumMinigame(BaseEnum):
+    """
+    Мини-игры.
+    """
+    no_game = ("Без игры", 1)
+    clicker = ("Кликер", 2)
+    cards = ("Карты", 3)
+    race = ("Гонка", 4)
+    reaction = ("Реакция", 5)
 

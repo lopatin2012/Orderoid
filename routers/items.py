@@ -2,9 +2,10 @@
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
 from schemas import ItemCreate, ItemResponse
 from utils.auth import oauth2_scheme
+
+from database import get_db
 
 router = APIRouter(prefix="/items", tags=["items"])
 

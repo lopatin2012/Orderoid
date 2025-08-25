@@ -1,31 +1,36 @@
 # routers/journey.py
 
-from fastapi import APIRouter, Request
+from random import choice
+
+from sqlalchemy.orm import Session
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-import random
-
-from locations import LOCATIONS
+from database import get_db
+from models import Location
 
 router = APIRouter()
 
 # Шаблоны.
 templates = Jinja2Templates(directory="templates")
 
-def get_location_by_id(loc_id: int):
+def __get_location_by_id(loc_id: int, db: Session = Depends(get_db)):
     """
     Получить последний id локации.
+    :param db:
     :param loc_id:
     :return:
     """
-    return next((loc for loc in LOCATIONS if loc["id"] == loc_id), None)
 
-@router.get("/journey", name="Путешествие")
-async def journey(request: Request):
+    return db.query(Location).filter(Location.id == loc_id).first()
+
+@router.get("/journey", name="Путешествие", response_model=None)
+async def journey(request: Request, db: Session = Depends(get_db)):
     """
     Путешествие!
     :param request:
+    :param db:
     :return:
     """
     path = request.session.get("path", [])
@@ -33,14 +38,14 @@ async def journey(request: Request):
 
     if not path:
         # Начинаем с первой локации.
-        start_loc = random.choice(LOCATIONS)
+        start_loc = choice(db.query(Location).all())
         path = [start_loc["id"]]
         current_index = 0
         request.session["path"] = path
         request.session["current_index"] = current_index
 
     current_loc_id = path[current_index]
-    current_loc = get_location_by_id(current_loc_id)
+    current_loc = __get_location_by_id(current_loc_id)
 
     return templates.TemplateResponse(
         "journey/main.html", {
@@ -51,18 +56,19 @@ async def journey(request: Request):
         },
     )
 
-@router.get("/journey/forward")
-async def go_forward(request: Request):
+@router.get("/journey/forward", response_model=None)
+async def go_forward(request: Request, db: Session = Depends(get_db)):
     """
     Переместиться вперёд.
     :param request:
+    :param db:
     :return:
     """
     path = request.session.get("path", [])
     current_index = request.session.get("current_index", 0)
 
     # Генерация новой локации.
-    next_loc = random.choice(LOCATIONS)
+    next_loc = choice(db.query(Location).all())
     path = path[:current_index + 1] # Обрезаем будущую локацию, если делали возвращение назад.
     path.append(next_loc["id"])
     current_index += 1
@@ -107,15 +113,16 @@ async def go_home(request: Request):
         }
     )
 
-@router.get("/map")
-async def show_map(request: Request):
+@router.get("/map", response_model=None)
+async def show_map(request: Request, db: Session = Depends(get_db)):
     """
     Показать карту пройденных локаций.
     :param request:
+    :param db:
     :return:
     """
     path = request.session.get("path", [])
-    locations_list = [get_location_by_id(loc_id) for loc_id in path]
+    locations_list = [__get_location_by_id(loc_id) for loc_id in path]
     return templates.TemplateResponse(
         "journey/map.html",
         {

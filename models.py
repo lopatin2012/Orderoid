@@ -1,4 +1,5 @@
 # models.py
+
 from sqlalchemy import (
     Column, Integer, String, Boolean, ForeignKey, DateTime, Text,
     Float, JSON, UniqueConstraint, Enum as SQLEnum
@@ -7,7 +8,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-from enums import EnumQuestStatus, EnumItemRarity, EnumItemType
+from enums import EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff
 
 
 class User(Base):
@@ -84,11 +85,11 @@ class Item(Base):
     # 'head', 'body', 'legs', 'gloves', 'ring 1', 'ring 2', 'feet', 'weapon'
 
     # Бонусы от предмета
-    bonus_endurance = Column(Integer, default=0)
-    bonus_strength = Column(Integer, default=0)
-    bonus_agility = Column(Integer, default=0)
-    bonus_intelligence = Column(Integer, default=0)
-    bonus_charisma = Column(Integer, default=0)
+    bonus_endurance = Column(Integer, default=0) # Выносливость.
+    bonus_strength = Column(Integer, default=0) # Сила.
+    bonus_agility = Column(Integer, default=0) # Ловкость.
+    bonus_intelligence = Column(Integer, default=0) # Интеллект.
+    bonus_charisma = Column(Integer, default=0) # Харизма.
 
     # Дополнительные параметры
     is_equippable = Column(Boolean, default=True)  # можно ли надеть
@@ -155,7 +156,7 @@ class QuestProgress(Base):
     id = Column(Integer, primary_key=True)
     quest_id = Column(Integer, ForeignKey("quests.id"), index=True)
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
-    progress = Column(Float, default=0.0)  # от 0.0 до 1.0. Проценты выполнения.
+    progress = Column(Float, default=0.0)  # От 0.0 до 1.0. Проценты выполнения.
     status = Column(SQLEnum(EnumQuestStatus), default=EnumQuestStatus.not_active)
     current_conditions = Column(JSON) # Необходимо количество для выполнения задания.
     started_at = Column(DateTime, default=datetime.now)
@@ -164,7 +165,8 @@ class QuestProgress(Base):
     quest = relationship("Quest", back_populates="progresses")
     user = relationship("User", back_populates="quest_progresses")
 
-    __table_args__ = UniqueConstraint("quest_id", "user_id")
+    __table_args__ = (UniqueConstraint("quest_id", "user_id"),)
+
 
 class BattleLog(Base):
     """
@@ -201,3 +203,18 @@ class BattleLog(Base):
 
     def __str__(self):
         return f"Бой: {self.character.user.username} VS {self.enemy.name} -> {self.result}!"
+
+
+class Location(Base):
+    """
+    Игровые локации.
+    """
+    __tablename__ = "locations"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, index=True)
+    description = Column(Text)
+    image = Column(String) # Местоположение изображения.
+    buff = Column(SQLEnum(EnumBuff)) # Эффект на персонажа.
+    event_type = Column(SQLEnum(EnumTypeEvent)) # Тип локации.
+    minigame = Column(String)
