@@ -2,10 +2,11 @@
 
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-from sqlalchemy.orm import  Session
+
+from sqlalchemy.orm import Session
 from database import get_db
+
 from models import User, Item, Character
-from utils.auth import oauth2_scheme
 
 router = APIRouter(tags=["inventory"])
 

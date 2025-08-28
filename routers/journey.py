@@ -114,7 +114,7 @@ async def go_home(request: Request):
     )
 
 @router.get("/map", response_model=None)
-async def show_map(request: Request, db: Session = Depends(get_db)):
+async def show_map(request: Request):
     """
     Показать карту пройденных локаций.
     :param request:

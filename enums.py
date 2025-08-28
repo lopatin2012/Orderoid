@@ -1,6 +1,6 @@
 # enums.py
 
-from enum import Enum
+from enum import Enum, IntEnum
 
 
 class BaseEnum(Enum):
@@ -148,4 +148,21 @@ class EnumMinigame(BaseEnum):
     cards = ("Карты", 3)
     race = ("Гонка", 4)
     reaction = ("Реакция", 5)
+
+
+class EnumNumbers(IntEnum):
+    """
+    Цифры. От 1 до 10.
+    """
+    one = 1
+    two = 2
+    three = 3
+    four = 4
+    five = 5
+    six = 6
+    seven = 7
+    eight = 8
+    nine = 9
+    ten = 10
+
 

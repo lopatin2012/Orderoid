@@ -21,6 +21,7 @@ def api_start_quest(quest_id: int, db: Session = Depends(get_db)):
     user_id = 1 # FIXME временно.
 
     result = start_quest(db, user_id, quest_id)
+
     if not result:
         raise HTTPException(status_code=400, detail="Задание не существует!")
 

@@ -1,0 +1,84 @@
+<!-- templates/character/profile.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Персонаж — {{ user.username }}{% endblock %}
+
+{% block content %}
+<script src="/static/js/character/main.js"></script>
+<div class="character-container">
+    <!-- Левая панель: задания и какая-то статистика для примера -->
+    <div class="panel left">
+        <h3>Задания</h3>
+        <ul class="quests">
+            {% for qp in active_quests %}
+                <li>
+                    {{ qp.quest.name }} — {{ "%.0f"|format(qp.progress * 100) }}%
+                </li>
+            {% else %}
+                <li><em>Нет активных заданий</em></li>
+            {% endfor %}
+        </ul>
+
+        <h3>Последние бои</h3>
+        <ul class="battles">
+            {% for battle in recent_battles %}
+                <li>
+                    {{ battle.enemy.name }} — {{ battle.result }}
+                    <small>({{ battle.ended_at.strftime("%H:%M") }})</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Центр: персонаж и экипировка -->
+    <div class="center">
+        <!-- Персонаж -->
+        <div class="character-silhouette">
+            <img src="/static/images/character-base.png" alt="Персонаж">
+
+            <!-- Слоты поверх изображения -->
+            <div class="slot head" title="Голова">{{ character.head_item.name if character.head_item else "—" }}</div>
+            <div class="slot body" title="Тело">{{ character.body_item.name if character.body_item else "—" }}</div>
+            <div class="slot legs" title="Ноги">{{ character.legs_item.name if character.legs_item else "—" }}</div>
+            <div class="slot gloves" title="Перчатки">{{ character.gloves_item.name if character.gloves_item else "—" }}</div>
+            <div class="slot weapon" title="Оружие">{{ character.weapon_item.name if character.weapon_item else "—" }}</div>
+            <div class="slot feet" title="Обувь">{{ character.feet_item.name if character.feet_item else "—" }}</div>
+            <div class="slot ring1" title="Кольцо 1">{{ character.ring1_item.name if character.ring1_item else "—" }}</div>
+            <div class="slot ring2" title="Кольцо 2">{{ character.ring2_item.name if character.ring2_item else "—" }}</div>
+            <div class="slot artefact" title="Артефакт">{{ character.artefact_item.name if character.artefact_item else "—" }}</div>
+        </div>
+    </div>
+
+    <!-- Правая панель: характеристики -->
+    <div class="panel right">
+        <h3>Характеристики</h3>
+        <div class="stats">
+            {% for stat in ["strength", "agility", "endurance", "intelligence", "charisma"] %}
+                {% set value = getattr(character, stat) %}
+                <div class="stat">
+                    <label>{{ {"strength": "Сила", "agility": "Ловкость", "endurance": "Выносливость", "intelligence": "Интеллект", "charisma": "Харизма"}[stat] }}</label>
+                    <span class="value">{{ value }}</span>
+                    <button class="btn upgrade" onclick="upgradeStat('{{ stat }}')">+</button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Инвентарь -->
+<div class="inventory-section">
+    <h3>Инвентарь</h3>
+    <div class="inventory-grid">
+        {% for item in inventory %}
+        <div class="item-card" style="border-left: 4px solid {{ item.rarity.color() }};">
+            <h4>{{ item.name }}</h4>
+            <p>{{ item.item_type.display_name }}</p>
+            <small>{{ item.rarity.display_name }}</small>
+            <form action="/character/equip/{{ item.id }}/{{ item.item_type }}" method="POST" style="display:inline">
+                <button type="submit" class="btn small">Надеть</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>

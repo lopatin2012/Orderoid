@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-from enums import EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff
+from enums import EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff, EnumNumbers
 
 
 class User(Base):
@@ -41,11 +41,11 @@ class Character(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     # Основные характеристики.
-    endurance = Column(Integer, default=10) # Выносливость.
-    strength = Column(Integer, default=10) # Сила.
-    agility = Column(Integer, default=10) # Ловкость.
-    intelligence = Column(Integer, default=10) # Интеллект.
-    charisma = Column(Integer, default=10) # Харизма
+    endurance = Column(Integer, default=EnumNumbers.ten.value) # Выносливость.
+    strength = Column(Integer, default=EnumNumbers.ten.value) # Сила.
+    agility = Column(Integer, default=EnumNumbers.ten.value) # Ловкость.
+    intelligence = Column(Integer, default=EnumNumbers.ten.value) # Интеллект.
+    charisma = Column(Integer, default=EnumNumbers.ten.value) # Харизма
 
     # Экипировка (ссылки на предметы).
     artefact_item_id = Column(Integer, ForeignKey("items.id"), nullable=True) # Артефакт.

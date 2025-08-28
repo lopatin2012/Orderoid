@@ -5,11 +5,36 @@ from sqlalchemy.orm import Session
 
 from general_dictionaries import valid_attributes
 
-from enums import EnumActionStatus
+from enums import EnumActionStatus, EnumNumbers
 
 from models import Character, Item, User
 
 from helpers.helper_character import get_result_calculate_upgrade_cost
+
+
+def get_or_create_character(db: Session, user_id: int) -> Character:
+    """
+    Получить персонажа, или создать нового.
+    :param db:
+    :param user_id:
+    :return:
+    """
+    character = db.query(Character).filter(Character.user_id == user_id).first()
+    if not character:
+
+        character = Character(
+            user_id=user_id,
+            endurance=EnumNumbers.ten.value,
+            strength=EnumNumbers.ten.value,
+            agility=EnumNumbers.ten.value,
+            intelligence=EnumNumbers.ten.value,
+            charisma=EnumNumbers.ten.value,
+        )
+        db.add(character)
+        db.commit()
+        db.refresh(character)
+
+    return character
 
 def equip_item(db: Session, user_id: int, item_id: int, slot: str):
     """

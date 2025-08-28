@@ -1,12 +1,66 @@
 # routers/character.py
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi.templating import Jinja2Templates
+
 from sqlalchemy.orm import Session
+
+from models import User, Item, Character, QuestProgress, BattleLog
 from database import get_db
 
-from crud.character import equip_item, upgrade_character_attribute
+from enums import EnumQuestStatus
+
+from crud.character import equip_item, upgrade_character_attribute, get_or_create_character
 
 router = APIRouter(prefix="/character", tags=["character"])
+
+templates = Jinja2Templates(directory="templates")
+
+
+@router.get("/", name="Профиль персонажа", response_model=None)
+def view_character(request: Request, db: Session = Depends(get_db)):
+    """
+    Просмотр персонажа.
+    :param request:
+    :param db:
+    :return:
+    """
+    user_id = 1 # Временно.
+    user = db.query(User).get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    character = get_or_create_character(db, user_id)
+    inventory = db.query(Item).filter(Item.owner_id == user_id).all()
+
+    # Активные задания.
+    active_quests = (
+        db.query(QuestProgress)
+        .filter(
+            QuestProgress.user_id == user_id,
+            QuestProgress.status == EnumQuestStatus.active.value
+        )
+        .all()
+    )
+
+    # Последние бои.
+    recent_battles = (
+        db.query(BattleLog)
+        .join(Character)
+        .filter(Character.user_id == user_id)
+        .order_by(BattleLog.ended_at.desc())
+        .limit(5)
+        .all()
+    )
+
+    return templates.TemplateResponse("character/main.html", {
+        "request": request,
+        "user": user,
+        "character": character,
+        "inventory": inventory,
+        "active_quests": active_quests,
+        "recent_battles": recent_battles,
+    })
 
 @router.post("/equip/{item_id}/{slot}")
 def api_equip_item(item_id: int, slot: str, db: Session = Depends(get_db)):
