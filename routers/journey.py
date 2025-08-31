@@ -7,6 +7,8 @@ from fastapi import APIRouter, Request, Depends
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from enums import EnumEmploymentStatuses
+
 from database import get_db
 from models import Location
 
@@ -15,7 +17,7 @@ router = APIRouter()
 # Шаблоны.
 templates = Jinja2Templates(directory="templates")
 
-def __get_location_by_id(loc_id: int, db: Session = Depends(get_db)):
+def __get_location_by_id(loc_id: int, db: Session) -> Location:
     """
     Получить последний id локации.
     :param db:
@@ -41,11 +43,12 @@ async def journey(request: Request, db: Session = Depends(get_db)):
         start_loc = choice(db.query(Location).all())
         path = [start_loc.id]
         current_index = 0
+        request.session["state"] = EnumEmploymentStatuses.journey.get_display_name()
         request.session["path"] = path
         request.session["current_index"] = current_index
 
     current_loc_id = path[current_index]
-    current_loc = __get_location_by_id(current_loc_id)
+    current_loc = __get_location_by_id(current_loc_id, db)
 
     return templates.TemplateResponse(
         "journey/main.html", {
@@ -70,7 +73,7 @@ async def go_forward(request: Request, db: Session = Depends(get_db)):
     # Генерация новой локации.
     next_loc = choice(db.query(Location).all())
     path = path[:current_index + 1] # Обрезаем будущую локацию, если делали возвращение назад.
-    path.append(next_loc["id"])
+    path.append(next_loc.id)
     current_index += 1
 
     request.session["path"] = path
@@ -114,7 +117,7 @@ async def go_home(request: Request):
     )
 
 @router.get("/map", response_model=None)
-async def show_map(request: Request):
+async def show_map(request: Request, db: Session = Depends(get_db)):
     """
     Показать карту пройденных локаций.
     :param request:
@@ -122,7 +125,10 @@ async def show_map(request: Request):
     :return:
     """
     path = request.session.get("path", [])
-    locations_list = [__get_location_by_id(loc_id) for loc_id in path]
+    locations_list = [
+        __get_location_by_id(loc_id, db) for loc_id in path
+        if __get_location_by_id(loc_id, db) is not None
+    ]
     return templates.TemplateResponse(
         "journey/map.html",
         {

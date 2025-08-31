@@ -23,6 +23,15 @@ class BaseEnum(Enum):
     def __repr__(self):
         return f"{self.__class__.__name__}.{self.name}"
 
+
+    def get_display_name(self):
+        """Возвращает отображаемое имя."""
+        return self.display_name
+
+    def get_order(self):
+        """Получить номер."""
+        return self.order
+
     @classmethod
     def all(cls):
         """Возвращает все элементы enum."""
@@ -30,7 +39,7 @@ class BaseEnum(Enum):
 
     @classmethod
     def names(cls):
-        """Имена (ключы)."""
+        """Имена (ключи)."""
         return [e.name for e in cls]
 
     @classmethod
@@ -118,7 +127,7 @@ class EnumBattleResults(BaseEnum):
 
 class EnumBuff(BaseEnum):
     """
-    Бонусы на игровом персонаже.
+    Бонусы для характеристик на игровом персонаже.
     """
     curiosity_boost = ("Увеличена общая скорость прокачки навыков!", 1)
     experience_boost = ("Увеличена скорость получения опыта!", 2)
@@ -128,6 +137,14 @@ class EnumBuff(BaseEnum):
     agility_boost = ("Увеличена скорость прокачки ловкости!", 6)
     intelligence_boost = ("Увеличена скорость прокачки интеллекта!", 7)
     charisma_boost = ("Увеличена скорость прокачки харизмы!", 8)
+
+    # Бонусы локации
+    rest = ("Отдых", 41) # Восстановление характеристик.
+    danger = ("Опасность", 42) # У врагов увеличен шанс попадания атаки по герою.
+    search = ("Поиск", 43) # Увеличен шанс что-то/кого-то найти.
+
+    # Особые.
+    nothing = ("Ничего", 101) # Нет эффекта.
 
 
 class EnumTypeEvent(BaseEnum):
@@ -166,3 +183,21 @@ class EnumNumbers(IntEnum):
     ten = 10
 
 
+class EnumEmploymentStatuses(BaseEnum):
+    """
+    Статусы занятости персонажа.
+    """
+    not_busy = ("not_busy", 1) # Персонаж ничем не занят.
+    journey = ("journey", 2) # Путешествие.
+    quest = ("quest", 3) # Задание.
+
+
+class EnumTypeLocation(BaseEnum):
+    """
+    Тип редкости локации.
+    """
+    common = ("Обычная", 1)
+    uncommon = ("Необычная", 2)
+    rare = ("Редкая", 3)
+    epic = ("Эпическая", 4)
+    legendary = ("Легендарная", 5)

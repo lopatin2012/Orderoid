@@ -65,7 +65,7 @@ input,
 button,
 textarea,
 select {
-  font: inherit;
+    font: inherit;
 }
 
 /* Удаляем все анимации и переходы для людей, которые предпочитай их не использовать */
@@ -79,6 +79,16 @@ select {
 }
 
 /* -------------------- Общие стили -------------------- */
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.margin-5 {
+    margin: 5px;
+}
 
 
 /* Кнопки */

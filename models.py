@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-from enums import EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff, EnumNumbers
+from enums import EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff, EnumNumbers, EnumTypeLocation
 
 
 class User(Base):
@@ -69,6 +69,8 @@ class Character(Base):
     ring2_item = relationship("Item", foreign_keys=[ring2_item_id])
     feet_item = relationship("Item", foreign_keys=[feet_item_id])
 
+    user = relationship("User", back_populates="character")
+
 
 class Item(Base):
     """
@@ -96,6 +98,22 @@ class Item(Base):
     is_equipped = Column(Boolean, default=False)  # надет ли прямо сейчас (альтернатива — через Character)
 
     owner = relationship("User", back_populates="items")
+
+
+class InventoryItem(Base):
+    """
+    Предмет в инвентаре пользователя.
+    """
+    __tablename__ = "inventory_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
+    quantity = Column(Integer, default=1) # Количество предмета. Стаки.
+    acquired_at = Column(DateTime, default=datetime.now)
+
+    user = relationship("User", back_populates="inventory")
+    item = relationship("Item")
 
 
 class Skill(Base):
@@ -217,4 +235,5 @@ class Location(Base):
     image = Column(String) # Местоположение изображения.
     buff = Column(SQLEnum(EnumBuff)) # Эффект на персонажа.
     event_type = Column(SQLEnum(EnumTypeEvent)) # Тип локации.
+    location_type = Column(SQLEnum())
     minigame = Column(String)
