@@ -165,6 +165,7 @@ class EnumMinigame(BaseEnum):
     cards = ("Карты", 3)
     race = ("Гонка", 4)
     reaction = ("Реакция", 5)
+    memory_game = ("На память", 6)
 
 
 class EnumNumbers(IntEnum):
@@ -181,6 +182,22 @@ class EnumNumbers(IntEnum):
     eight = 8
     nine = 9
     ten = 10
+
+
+class EnumNumbersFloat(Enum):
+    """
+    Цифры с точкой.
+    """
+    one = 1.0
+    two = 2.0
+    three = 3.0
+    four = 4.0
+    five = 5.0
+    six = 6.0
+    seven = 7.0
+    eight = 8.0
+    nine = 9.0
+    ten = 10.0
 
 
 class EnumEmploymentStatuses(BaseEnum):

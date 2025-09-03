@@ -38,7 +38,7 @@ def view_character(request: Request, db: Session = Depends(get_db)):
         db.query(QuestProgress)
         .filter(
             QuestProgress.user_id == user_id,
-            QuestProgress.status == EnumQuestStatus.active.value
+            QuestProgress.status == EnumQuestStatus.active
         )
         .all()
     )
@@ -53,7 +53,7 @@ def view_character(request: Request, db: Session = Depends(get_db)):
         .all()
     )
 
-    return templates.TemplateResponse("character/main.html", {
+    return templates.TemplateResponse("character/profile.html", {
         "request": request,
         "user": user,
         "character": character,

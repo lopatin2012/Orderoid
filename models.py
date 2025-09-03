@@ -8,7 +8,10 @@ from sqlalchemy.orm import relationship
 from database import Base
 from datetime import datetime
 
-from enums import EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff, EnumNumbers, EnumTypeLocation
+from enums import (
+    EnumQuestStatus, EnumItemRarity, EnumItemType, EnumTypeEvent, EnumBuff, EnumTypeLocation,
+    EnumMinigame, EnumNumbers, EnumNumbersFloat
+)
 
 
 class User(Base):
@@ -233,7 +236,21 @@ class Location(Base):
     name = Column(String, index=True)
     description = Column(Text)
     image = Column(String) # Местоположение изображения.
-    buff = Column(SQLEnum(EnumBuff)) # Эффект на персонажа.
-    event_type = Column(SQLEnum(EnumTypeEvent)) # Тип локации.
-    location_type = Column(SQLEnum())
-    minigame = Column(String)
+
+    buff = Column(SQLEnum(EnumBuff), nullable=True) # Эффект на персонажа.
+    event_type = Column(SQLEnum(EnumTypeEvent), nullable=True) # Тип локации.
+    location_type = Column(SQLEnum(EnumTypeLocation), nullable=False, default=EnumTypeLocation.common) # Редкость локации.
+
+    minigame = Column(SQLEnum(EnumMinigame), nullable=False, default=EnumMinigame.no_game) # Без игры.
+
+    # Дополнительные параметры.
+    difficulty = Column(Integer, default=EnumNumbers.one.value)  # сложность (1–10)
+    experience_multiplier = Column(Float, default=EnumNumbersFloat.one.value)  # множитель опыта
+    money_multiplier = Column(Float, default=EnumNumbersFloat.one.value)  # множитель валюты
+    danger_level = Column(Integer, default=EnumNumbers.one.value)  # уровень угрозы (влияет на врагов)
+
+    def __str__(self):
+        return f"{self.name} ({self.location_type.dispay_name})"
+
+    def __repr__(self):
+        return f"<Location id={self.id} name='{self.name}' type={self.location_type.name}>"

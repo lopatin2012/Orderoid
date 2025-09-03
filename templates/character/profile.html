@@ -1,6 +1,6 @@
 <!-- templates/character/profile.html -->
 
-{% extends "base.html" %}
+{% extends "base/main.html" %}
 
 {% block title %}Персонаж — {{ user.username }}{% endblock %}
 
@@ -54,6 +54,7 @@
     <div class="panel right">
         <h3>Характеристики</h3>
         <div class="stats">
+            <span class="value" id="experience-value">{{ user.experience }}</span>
             {% for stat in ["strength", "agility", "endurance", "intelligence", "charisma"] %}
                 {% set value = getattr(character, stat) %}
                 <div class="stat">
