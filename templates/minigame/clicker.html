@@ -1,0 +1,24 @@
+<!-- templates/minigame/clicker.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Мини-игра: Кликер — {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="clicker-game">
+    <h2>⚡ Кликер</h2>
+    <p>Нажмите на кнопку как можно больше раз за <strong id="time">10</strong> секунд!</p>
+
+    <div class="game-area">
+        <button id="click-btn" class="click-btn" onclick="clickButton()">
+            Клик! (0)
+        </button>
+    </div>
+
+    <div class="result" id="result" style="display: none; margin-top: 20px;">
+        <h3>🎉 Игра окончена!</h3>
+        <p>Вы сделали <strong id="clicks-count">0</strong> кликов!</p>
+        <p id="reward"></p>
+        <a href="/journey" class="btn primary">Назад в путешествие</a>
+    </div>
+</div>

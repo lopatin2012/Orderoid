@@ -16,6 +16,7 @@ from routers.users import router as router_users
 from routers.items import router as router_items
 from routers.journey import router as router_journey
 from routers.character import router as router_character
+from routers.minigame import router as router_minigame
 
 # Статика и шаблоны.
 from fastapi.staticfiles import StaticFiles
@@ -37,6 +38,7 @@ app.include_router(router_users)
 app.include_router(router_items)
 app.include_router(router_journey)
 app.include_router(router_character)
+app.include_router(router_minigame)
 
 # Раздача статических файлов.
 app.mount("/static", StaticFiles(directory="static"), name="static")

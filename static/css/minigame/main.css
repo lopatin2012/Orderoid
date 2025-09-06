@@ -1,0 +1,52 @@
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.clicker-game {
+    text-align: center;
+    padding: 20px;
+}
+
+.game-area {
+    margin: 30px 0;
+}
+
+.click-btn {
+    font-size: 24px;
+    padding: 15px 30px;
+    background: #007acc;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.click-btn:hover {
+    background: #005a87;
+}
+
+.click-btn:active {
+    transform: scale(0.95);
+}
+
+.result {
+    animation: fadeIn 0.5s ease;
+}
+
+.minigame-link {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 15px;
+    background: #27ae60;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.minigame-link:hover {
+    background: #219653;
+}
