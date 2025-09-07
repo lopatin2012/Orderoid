@@ -65,3 +65,4 @@ def submit_clicker_result(result: ClickerResult, db: Session = Depends(get_db)):
     db.commit()
 
     return {"status": EnumActionStatus.success.get_display_name(), "experience_gained": exp_reward}
+

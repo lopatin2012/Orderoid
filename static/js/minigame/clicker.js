@@ -1,6 +1,9 @@
+// static/js/minigame/clicker.js
+
 let clicks = 0;
 let timeLeft = 10;
 let gameActive = true;
+let timerGameActive;
 
 function clickButton() {
     if (gameActive) {
@@ -20,6 +23,9 @@ function updateTimer() {
 
 function endGame() {
     gameActive = false;
+
+    clearInterval(timerGameActive);
+
     document.getElementById("click-btn").disabled = true;
     document.getElementById("click-btn").style.opacity = 0.6;
 
@@ -51,4 +57,4 @@ function endGame() {
 }
 
 // Запуск таймера
-setInterval(updateTimer, 1000);
+timerGameActive = setInterval(updateTimer, 1000);

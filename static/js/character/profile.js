@@ -36,7 +36,9 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Обновление характеристики.
-function upgradeStat(attr) {
+async function upgradeStat(attr) {
+    const button = document.querySelector(`.upgrade[data-stat="${attr}"]`);
+    if (button) button.disabled = true;
     try {
         const response = await fetch(`/character/upgrade/${attr}`, {
             method: "POST",
@@ -48,18 +50,22 @@ function upgradeStat(attr) {
         const data = await response.json();
 
         if (response.ok && data.status === "success") {
+            // Обновляем значение характеристики
             const valueEl = document.querySelector(`.stat[label='${attr}'] .value`);
             if (valueEl) {
                 valueEl.textContent = data.new_value;
             }
+            // Обновляем опыт
             updateExperience(data.experience_left);
-            showNotification("Характеристика улучшена!", "success");
+            showNotification("✅ Характеристика улучшена!", "success");
         } else {
-            showNotification((data.detail || " Ошибка"), "error");
+            showNotification("❌ " + (data.detail || "Ошибка"), "error");
         }
     } catch (error) {
-        showNotification("Ошибка сети!", "error");
-        console.error("Ошибка:", error);
+        showNotification("⚠️ Ошибка сети", "error");
+        console.error("Ошибка сети:", error);
+    } finally {
+        if (button) button.disabled = false;
     }
 }
 

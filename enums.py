@@ -166,6 +166,7 @@ class EnumMinigame(BaseEnum):
     race = ("Гонка", 4)
     reaction = ("Реакция", 5)
     memory_game = ("На память", 6)
+    tower_enemies = ("Враги башни", 7)
 
 
 class EnumNumbers(IntEnum):

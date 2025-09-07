@@ -5,7 +5,7 @@
 {% block title %}Персонаж — {{ user.username }}{% endblock %}
 
 {% block content %}
-<script src="/static/js/character/main.js"></script>
+<script src="/static/js/character/profile.js"></script>
 <div class="character-container">
     <!-- Левая панель: задания и какая-то статистика для примера -->
     <div class="panel left">
@@ -56,11 +56,17 @@
         <div class="stats">
             <span class="value" id="experience-value">{{ user.experience }}</span>
             {% for stat in ["strength", "agility", "endurance", "intelligence", "charisma"] %}
-                {% set value = getattr(character, stat) %}
+                {% set value = {
+                    "strength": character.strength,
+                    "agility": character.agility,
+                    "endurance": character.endurance,
+                    "intelligence": character.intelligence,
+                    "charisma": character.charisma
+                }[stat] %}
                 <div class="stat">
                     <label>{{ {"strength": "Сила", "agility": "Ловкость", "endurance": "Выносливость", "intelligence": "Интеллект", "charisma": "Харизма"}[stat] }}</label>
                     <span class="value">{{ value }}</span>
-                    <button class="btn upgrade" onclick="upgradeStat('{{ stat }}')">+</button>
+                    <button class="btn upgrade" onclick="upgradeStat('{{ stat }}')" data-stat="{{ stat }}">+</button>
                 </div>
             {% endfor %}
         </div>
@@ -83,3 +89,4 @@
         {% endfor %}
     </div>
 </div>
+{% endblock content %}

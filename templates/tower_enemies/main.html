@@ -1,0 +1,34 @@
+<!-- templates/minigame/clicker.html -->
+
+{% extends "base/main.html" %}
+
+{% block title %}Мини-игра: Враги башни — {{ user.username }}{% endblock %}
+
+{% block content %}
+
+<div class="header-game">
+    <h2>Враги башни!</h2>
+    <p>Защити башню от врагов как можно <strong id="time">дольше</strong>!...</p>
+
+    <div class="game-area">
+      <canvas id="gameCanvas" width="800" height="600"></canvas>
+      <div class="ui">
+        <p>Золото: <span id="gold">500</span></p>
+        <p>Жизни: <span id="lives">100</span></p>
+        <p>Волна: <span id="wave">1</span></p>
+        <button id="spawnBtn">Создать башню (100 золота)</button>
+      </div>
+    </div>
+
+    <div class="result" id="result" style="display: none; margin-top: 20px;">
+        <h3>🎉 Игра окончена!</h3>
+        <p>Вы испытание пройдено! Вы продержались<strong id="lives-seconds"></strong> секунд!</p>
+        <p id="reward"></p>
+        <a href="/journey" class="btn primary">Назад в путешествие</a>
+    </div>
+</div>
+
+<script src="/static/js/tower_enemies/game.js"></script>
+<script src="/static/js/tower_enemies/main.js"></script>
+
+{% endblock content %}

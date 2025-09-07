@@ -1,11 +1,12 @@
 <!-- templates/minigame/clicker.html -->
 
-{% extends "base.html" %}
+{% extends "base/main.html" %}
 
 {% block title %}Мини-игра: Кликер — {{ user.username }}{% endblock %}
 
 {% block content %}
-<div class="clicker-game">
+
+<div class="header-game">
     <h2>⚡ Кликер</h2>
     <p>Нажмите на кнопку как можно больше раз за <strong id="time">10</strong> секунд!</p>
 
@@ -22,3 +23,7 @@
         <a href="/journey" class="btn primary">Назад в путешествие</a>
     </div>
 </div>
+
+<script src="/static/js/minigame/clicker.js"></script>
+
+{% endblock content %}
