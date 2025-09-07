@@ -27,8 +27,9 @@ def view_character(request: Request, db: Session = Depends(get_db)):
     """
     user_id = 1 # Временно.
     user = db.query(User).get(user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    # if not user:
+    #     raise HTTPException(status_code=404, detail="Пользователь не найден")
 
     character = get_or_create_character(db, user_id)
     inventory = db.query(Item).filter(Item.owner_id == user_id).all()
