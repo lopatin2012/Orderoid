@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
 
+from utils.auth import get_current_user
 from sqlalchemy.orm import Session
 from database import get_db
 
@@ -13,16 +14,15 @@ router = APIRouter(tags=["inventory"])
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/inventory", name="Инвентарь")
-def view_inventory(request: Request, db: Session = Depends(get_db)):
+def view_inventory(request: Request, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Просмотр инвентаря.
     :param request:
     :param db:
     :return:
     """
-    user_id: int = 1 # FIXME временно. Переделать на JWT.
+    user_id = user.id
 
-    user = db.query(User).get(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 

@@ -44,9 +44,9 @@ class Character(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     # Основные характеристики.
-    endurance = Column(Integer, default=EnumNumbers.ten.value) # Выносливость.
     strength = Column(Integer, default=EnumNumbers.ten.value) # Сила.
     agility = Column(Integer, default=EnumNumbers.ten.value) # Ловкость.
+    endurance = Column(Integer, default=EnumNumbers.ten.value) # Выносливость.
     intelligence = Column(Integer, default=EnumNumbers.ten.value) # Интеллект.
     charisma = Column(Integer, default=EnumNumbers.ten.value) # Харизма
 

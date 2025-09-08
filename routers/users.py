@@ -1,11 +1,13 @@
 # routers/users.py
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from database import get_db
 from schemas import UserCreate, UserResponse
 from crud.user import create_user, get_user_by_username
-from utils.auth import create_access_token, verify_password
+from utils.auth import create_access_token
+from utils.security import verify_password
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -40,3 +42,9 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
     access_token = create_access_token(data={"sub": db_user.username, "id": db_user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/logout")
+def logout():
+    response = RedirectResponse(url="/")
+    # Удаляем из localStorage
+    return response

@@ -219,3 +219,14 @@ class EnumTypeLocation(BaseEnum):
     rare = ("Редкая", 3)
     epic = ("Эпическая", 4)
     legendary = ("Легендарная", 5)
+
+
+class EnumAttributes(BaseEnum):
+    """
+    Характеристики персонажа.
+    """
+    strength = ("Сила", 1)
+    agility = ("Ловкость", 2)
+    endurance = ("Выносливость", 3)
+    intelligence = ("Интеллект", 4)
+    charisma = ("Харизма", 5)

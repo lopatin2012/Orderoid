@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from models import User, Item, Character, QuestProgress, BattleLog
+from utils.auth import get_current_user
 from database import get_db
 
 from enums import EnumQuestStatus
@@ -18,18 +19,19 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/", name="Профиль персонажа", response_model=None)
-def view_character(request: Request, db: Session = Depends(get_db)):
+def view_character(request: Request, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Просмотр персонажа.
     :param request:
     :param db:
+    :param user:
     :return:
     """
-    user_id = 1 # Временно.
-    user = db.query(User).get(user_id)
 
-    # if not user:
-    #     raise HTTPException(status_code=404, detail="Пользователь не найден")
+    if not user:
+         raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    user_id = user.id
 
     character = get_or_create_character(db, user_id)
     inventory = db.query(Item).filter(Item.owner_id == user_id).all()
@@ -64,26 +66,31 @@ def view_character(request: Request, db: Session = Depends(get_db)):
     })
 
 @router.post("/equip/{item_id}/{slot}")
-def api_equip_item(item_id: int, slot: str, db: Session = Depends(get_db)):
+def api_equip_item(item_id: int, slot: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Экипировать предмет.
     :param item_id:
     :param slot:
     :param db:
+    :param user:
     :return:
     """
-    user_id = 1  # временно. FIXME заменить на JWT
+
+    user_id = user.id
     equip_item(db, user_id, item_id, slot)
+
     return {"status": "equipped", "item_id": item_id, "slot": slot}
 
 @router.post("/upgrade/{attribute}")
-def api_upgrade_attribute(attribute: str, db: Session = Depends(get_db)):
+def api_upgrade_attribute(attribute: str, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Улучшение характеристики персонажа.
     :param attribute:
     :param db:
+    :param user:
     :return:
     """
 
-    user_id = 1 # Временно.
+    user_id = user.id
+
     return upgrade_character_attribute(attribute, user_id, db)

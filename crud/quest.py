@@ -18,6 +18,7 @@ def start_quest(db: Session, user_id: int, quest_id: int):
     """
 
     quest = db.query(Quest).filter(Quest.id == quest_id).first()
+
     if not quest:
         raise HTTPException(status_code=404, detail="Задание не найдено!")
 
@@ -28,10 +29,13 @@ def start_quest(db: Session, user_id: int, quest_id: int):
     ).first()
 
     if progress:
+
         if progress.status == EnumQuestStatus.completed.value:
             raise HTTPException(status_code=400, detail="Квест уже выполнен!")
+
         elif progress.status == EnumQuestStatus.active.value:
             return progress
+
         else:
             progress.status = EnumQuestStatus.active.value
             progress.started_at = datetime.now()
@@ -48,6 +52,7 @@ def start_quest(db: Session, user_id: int, quest_id: int):
 
     db.commit()
     db.refresh(progress)
+
     return progress
 
 def update_quest_progress(db: Session, user_id: int, quest_id: int, amount: int = 1, current_conditions: dict = None):
@@ -98,6 +103,7 @@ def update_quest_progress(db: Session, user_id: int, quest_id: int, amount: int 
 
     db.commit()
     db.refresh(progress)
+
     return progress
 
 def complete_quest_and_reward(db: Session, user_id: int, quest_id: int):
@@ -120,6 +126,7 @@ def complete_quest_and_reward(db: Session, user_id: int, quest_id: int):
 
     quest = progress.quest
     user = db.query(User).filter(User.id == user_id).first()
+
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден!")
 

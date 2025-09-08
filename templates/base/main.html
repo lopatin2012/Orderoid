@@ -13,18 +13,23 @@
 <header class="header">
     <div class="nav-left">
         <a href="/"><i class="fas fa-home"></i> Домой</a>
-        <a href="/map"><i class="fas fa-map"></i> Карта</a>
-        <a href="#"><i class="fas fa-chevron-left"></i> Назад</a>
-        <a href="#"><i class="fas fa-chevron-right"></i> Дальше</a>
-        <a href="/character"><i class="fas fa-chevron-down"></i> Персонаж</a>
+        {% if request.session.get("user_id") %}
+            <a href="/map"><i class="fas fa-map"></i> Карта</a>
+            <a href="/character"><i class="fas fa-user"></i> Персонаж</a>
+            <a href="/journey"><i class="fas fa-road"></i> Путешествие</a>
+        {% endif %}
     </div>
     <div class="search">
         <input type="text" placeholder="Поиск...">
     </div>
     <div class="nav-right">
-        <div class="user-icon">
-            <i class="fas fa-user-circle"></i>
-        </div>
+        {% if current_user %}
+            <div class="user-greeting">Привет, {{ current_user.username }}!</div>
+            <a href="/logout" class="btn small">Выйти</a>
+        {% else %}
+            <a href="/auth/login" class="btn small primary">Войти</a>
+            <a href="/auth/register" class="btn small">Регистрация</a>
+        {% endif %}
         <div class="flex-center">О сайте</div>
     </div>
 </header>

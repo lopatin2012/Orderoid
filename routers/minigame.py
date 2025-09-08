@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
+from utils.auth import get_current_user
 from database import get_db
 from models import User, Character
 
@@ -19,19 +20,20 @@ class ClickerResult(BaseModel):
 
 
 @router.get("/clicker")
-def play_clicker(request: Request, db: Session = Depends(get_db)):
+def play_clicker(request: Request, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Мини-игра: кликер.
     Необходимо сделать как можно больше кликов по движущейся цели.
     :param request:
     :param db:
+    :param user:
     :return:
     """
-    user_id = 1 # FIXME
-    user = db.query(User).get(user_id)
 
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    user_id = user.id
 
     character = db.query(Character).filter(Character.user_id == user_id).first()
 
@@ -48,15 +50,16 @@ def play_clicker(request: Request, db: Session = Depends(get_db)):
     )
 
 @router.post("/clicker/submit")
-def submit_clicker_result(result: ClickerResult, db: Session = Depends(get_db)):
+def submit_clicker_result(result: ClickerResult, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """
     Выдать награду за количество кликов.
     :param result:
     :param db:
+    :param user:
     :return:
     """
-    user_id = 1 #FIXME
-    user = db.query(User).get(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
 
     calculate_min_exp_reward = 500 * user.level * ATTR_COST_MULTIPLIER
 
@@ -65,4 +68,3 @@ def submit_clicker_result(result: ClickerResult, db: Session = Depends(get_db)):
     db.commit()
 
     return {"status": EnumActionStatus.success.get_display_name(), "experience_gained": exp_reward}
-

@@ -1,8 +1,7 @@
 # main.py
 
 import jinja2.exceptions
-from fastapi import FastAPI
-
+from fastapi import FastAPI, Depends
 from fastapi.requests import Request
 
 # База.
@@ -21,6 +20,12 @@ from routers.minigame import router as router_minigame
 # Статика и шаблоны.
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+# Модели.
+from models import User
+
+# Помощник аутентификации пользователя.
+from utils.auth import get_current_user
 
 # Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -48,7 +53,10 @@ templates = Jinja2Templates(directory="templates")
 
 # Стартовая страница.
 @app.get("/")
-def read_root(request: Request):
+def read_root(
+        request: Request,
+        current_user: User = Depends(get_current_user),
+):
     try:
         template = templates.TemplateResponse(
             name="main/main.html",
@@ -56,6 +64,8 @@ def read_root(request: Request):
                 "request": request,
                 # Заголовок страницы.
                 "title": "Главная страница",
+                # Текущий пользователь.
+                "current_user": current_user,
                 # Сообщение о работе страницы.
                 "message": "Страница загружена",
 

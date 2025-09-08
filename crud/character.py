@@ -3,9 +3,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from general_dictionaries import valid_attributes
-
-from enums import EnumActionStatus, EnumNumbers
+from enums import EnumActionStatus, EnumNumbers, EnumAttributes
 
 from models import Character, Item, User
 
@@ -105,7 +103,7 @@ def upgrade_character_attribute(attribute: str, user_id: int, db: Session, value
         raise HTTPException(status_code=404, detail="Персонаж не найден!")
 
     # Проверка существования атрибута.
-    if attribute not in valid_attributes:
+    if attribute not in EnumAttributes.display_names():
         raise HTTPException(status_code=404, detail="Недопустимая характеристика!")
 
     # Сделать хитрый расчёт стоимости.

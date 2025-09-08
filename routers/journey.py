@@ -89,8 +89,10 @@ async def go_back(request: Request):
     :return:
     """
     current_index = request.session.get("current_index", 0)
+
     if current_index > 0:
         request.session["current_index"] = current_index - 1
+
     return RedirectResponse(url="/journey", status_code=303)
 
 @router.get("/journey/home")
@@ -129,6 +131,7 @@ async def show_map(request: Request, db: Session = Depends(get_db)):
         __get_location_by_id(loc_id, db) for loc_id in path
         if __get_location_by_id(loc_id, db) is not None
     ]
+
     return templates.TemplateResponse(
         "journey/map.html",
         {

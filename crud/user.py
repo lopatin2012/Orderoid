@@ -1,6 +1,6 @@
 # crud/user.py
 
-from utils.auth import pwd_context
+from utils.security import pwd_context
 
 from sqlalchemy.orm import Session
 
@@ -14,6 +14,7 @@ def create_user (db: Session, user: schemas.UserCreate):
     :param user:
     :return:
     """
+
     hashed_pw = pwd_context.hash(user.password)
     db_user = models.User(
         username=user.username,
@@ -23,6 +24,7 @@ def create_user (db: Session, user: schemas.UserCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+
     return db_user
 
 def get_user_by_username(db: Session, username: str):
@@ -32,4 +34,5 @@ def get_user_by_username(db: Session, username: str):
     :param username:
     :return:
     """
+
     return db.query(models.User).filter(models.User.username == username).first()

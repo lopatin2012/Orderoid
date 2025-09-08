@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from schemas import ItemCreate, ItemResponse
-from utils.auth import oauth2_scheme
+from utils.auth import oauth2_scheme, get_current_user
 
 from database import get_db
 
